@@ -1,0 +1,13 @@
+一键工具狗
+Copyright 2026 xxyopen
+
+本产品包含由本项目贡献者开发的软件，依据 Apache License 2.0 授权，
+协议全文见仓库根目录 LICENSE 文件。
+
+Third-party notice:
+本项目依赖的第三方软件包（uni-app、Vue、Vite、Pinia、qrcode-generator 等）
+归各自权利人所有，并按其各自的许可证分发。相关许可证文本随各依赖包提供，
+依赖清单见 package.json。本 NOTICE 不扩展或限制上述第三方许可证的条款。
+
+品牌说明：
+「一键工具狗」名称、Logo 及相关品牌素材不包含在 Apache License 2.0 的授权范围内。

@@ -1,0 +1,35 @@
+{
+  "easycom": {
+    "autoscan": true
+  },
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "一键工具狗",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/tool/detail",
+      "style": {
+        "navigationBarTitleText": "工具详情"
+      }
+    },
+    {
+      "path": "pages/mine/index",
+      "style": {
+        "navigationBarTitleText": "我的"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "一键工具狗",
+    "backgroundColor": "#F7F8FA",
+    "backgroundTextStyle": "dark",
+    "backgroundColorTop": "#F7F8FA",
+    "backgroundColorBottom": "#F7F8FA"
+  }
+}

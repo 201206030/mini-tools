@@ -1,0 +1,18 @@
+// 一键工具狗 · 设计变量
+// 说明：小程序 WXSS 对 CSS 变量的继承支持良好，这里同时提供 SCSS 变量与 CSS 变量。
+// 组件样式中优先使用 common.scss 的通用类，避免重复定义。
+
+$brand: #3eaf7c;
+$brand-dark: #33996b;
+$brand-tint: #e8f6ef;
+$page-bg: #f7f8fa;
+$card-bg: #ffffff;
+$text-main: #222222;
+$text-sub: #888888;
+$line: #eeeeee;
+$warn: #e8892b;
+$danger: #e05252;
+
+$radius-card: 20rpx;
+$radius-input: 14rpx;
+$gap-page: 24rpx;
