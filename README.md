@@ -3,6 +3,8 @@
   <h1 style="margin:6px 0 8px;padding:0;border:0;font-size:30px;">一键工具狗</h1>
   一款隐私优先的微信小程序工具合集，主打本地处理、零联网、免登录。<br>
   <br>
+  <a href="https://gitee.com/xiongxyang/mini-tools"><img src="https://img.shields.io/badge/Gitee-mini--tools-C71D23?logo=gitee&amp;logoColor=white" alt="Gitee 仓库"></a>
+  <a href="https://github.com/201206030/mini-tools"><img src="https://img.shields.io/badge/GitHub-mini--tools-181717?logo=github" alt="GitHub 仓库"></a>
   <a href="https://github.com/201206030/mini-tools/releases"><img src="https://img.shields.io/badge/version-1.0.0-blue" alt="version"></a>
   <img src="https://img.shields.io/badge/Vue-3.4-42B883?logo=vue.js" alt="Vue 3">
   <img src="https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript" alt="TypeScript">
