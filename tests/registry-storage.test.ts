@@ -35,11 +35,11 @@ afterEach(() => {
 })
 
 describe('统一工具注册表', () => {
-  it('注册 22 个工具，ID 唯一，分属 6 个分类', () => {
-    expect(TOOLS).toHaveLength(22)
-    expect(new Set(TOOLS.map((tool) => tool.id)).size).toBe(22)
+  it('注册 23 个工具，ID 唯一，分属 6 个分类', () => {
+    expect(TOOLS).toHaveLength(23)
+    expect(new Set(TOOLS.map((tool) => tool.id)).size).toBe(23)
     expect(CATEGORIES).toHaveLength(6)
-    expect(getToolsByCategory('calc')).toHaveLength(4)
+    expect(getToolsByCategory('calc')).toHaveLength(5)
     expect(getToolsByCategory('life')).toHaveLength(4)
     expect(getToolsByCategory('image')).toHaveLength(2)
     expect(getToolsByCategory('text')).toHaveLength(2)
@@ -82,6 +82,7 @@ describe('统一工具注册表', () => {
     expect(searchTools('学习').map((tool) => tool.id)).toContain('periodic-table')
     expect(searchTools('JSON').map((tool) => tool.id)).toContain('json-formatter')
     expect(searchTools('Base64').map((tool) => tool.id)).toContain('base64-codec')
+    expect(searchTools('汇率').map((tool) => tool.id)).toContain('exchange-rate')
   })
 
   it('无收藏时提供默认推荐工具', () => {

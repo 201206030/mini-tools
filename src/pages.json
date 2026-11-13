@@ -21,6 +21,12 @@
       "style": {
         "navigationBarTitleText": "我的"
       }
+    },
+    {
+      "path": "pages/currency-picker/index",
+      "style": {
+        "navigationBarTitleText": "选择币种"
+      }
     }
   ],
   "globalStyle": {

@@ -4,7 +4,7 @@ export const CATEGORIES: Category[] = [
   {
     id: 'calc',
     name: '计算工具',
-    desc: '日期、换算、房贷、个税',
+    desc: '日期、换算、房贷、个税、汇率',
     icon: '算',
     color: '#3EAF7C',
     tint: '#E8F6EF'

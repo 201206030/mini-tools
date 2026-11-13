@@ -12,6 +12,7 @@ import DateCalculator from '@/tools/date-calculator/index.vue'
 import UnitConverter from '@/tools/unit-converter/index.vue'
 import MortgageCalculator from '@/tools/mortgage-calculator/index.vue'
 import TaxCalculator from '@/tools/tax-calculator/index.vue'
+import ExchangeRate from '@/tools/exchange-rate/index.vue'
 import QrcodeGenerator from '@/tools/qrcode-generator/index.vue'
 import RandomNumber from '@/tools/random-number/index.vue'
 import RandomPicker from '@/tools/random-picker/index.vue'
@@ -67,6 +68,7 @@ function goHome() {
         <UnitConverter v-else-if="tool.id === 'unit-converter'" />
         <MortgageCalculator v-else-if="tool.id === 'mortgage-calculator'" />
         <TaxCalculator v-else-if="tool.id === 'tax-calculator'" />
+        <ExchangeRate v-else-if="tool.id === 'exchange-rate'" />
         <QrcodeGenerator v-else-if="tool.id === 'qrcode-generator'" />
         <RandomNumber v-else-if="tool.id === 'random-number'" />
         <RandomPicker v-else-if="tool.id === 'random-picker'" />

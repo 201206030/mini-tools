@@ -112,6 +112,16 @@ export const TOOLS: ToolMeta[] = [
     keywords: ['去重', '重复', '文本', '按行', '名单', '整理']
   },
   {
+    id: 'exchange-rate',
+    name: '汇率计算器',
+    desc: '多币种换算，联网取一次汇率后即可离线使用',
+    category: 'calc',
+    icon: '汇',
+    keywords: ['汇率', '换算', '外币', '货币', '兑换', '美元', '欧元', '日元', '港币', '出国', '旅游', '代购', '结汇', 'CNY', 'USD'],
+    recommended: true,
+    tip: '首次需联网获取一次参考汇率，之后保存在本机，断网也能换算；金额不会上传。'
+  },
+  {
     id: 'math-formulas',
     name: '数学公式',
     desc: '常用数学公式速查，可按分类与关键词查找',

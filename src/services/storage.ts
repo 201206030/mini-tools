@@ -5,7 +5,22 @@ const PREFIX = 'wntx_'
 const KEY_FAVORITES = PREFIX + 'favorites'
 const KEY_RECENT = PREFIX + 'recent'
 const KEY_PREFS = PREFIX + 'prefs'
-const ALL_KEYS = [KEY_FAVORITES, KEY_RECENT, KEY_PREFS]
+const KEY_EXCHANGE_RATES = PREFIX + 'exchange_rates'
+const ALL_KEYS = [KEY_FAVORITES, KEY_RECENT, KEY_PREFS, KEY_EXCHANGE_RATES]
+
+/**
+ * 供业务模块复用的通用本地 JSON 读写。
+ * 与上方私有实现共用同一套内存降级与损坏数据容错逻辑，避免各模块自行调用
+ * uni.setStorageSync 导致行为不一致；键名同样需要以 wntx_ 开头并登记到 ALL_KEYS，
+ * 这样「我的 - 清除本地数据」才能真正清干净。
+ */
+export function readLocalJSON<T>(key: string, fallback: T, isValid: (value: unknown) => boolean): T {
+  return readJSON<T>(key, fallback, isValid)
+}
+
+export function writeLocalJSON(key: string, value: unknown): void {
+  writeJSON(key, value)
+}
 
 export const MAX_RECENT = 10
 
