@@ -110,6 +110,96 @@ export const TOOLS: ToolMeta[] = [
     category: 'text',
     icon: '重',
     keywords: ['去重', '重复', '文本', '按行', '名单', '整理']
+  },
+  {
+    id: 'math-formulas',
+    name: '数学公式',
+    desc: '常用数学公式速查，可按分类与关键词查找',
+    category: 'study',
+    icon: '公',
+    keywords: ['数学', '公式', '几何', '代数', '三角函数', '面积', '体积', '勾股', '二次方程', '导数', '数列', '概率', '学生', '考试'],
+    tip: '公式为纯文本展示，供学习与速查使用。'
+  },
+  {
+    id: 'periodic-table',
+    name: '元素周期表',
+    desc: '118 种元素的符号、名称与相对原子质量速查',
+    category: 'study',
+    icon: '素',
+    keywords: ['元素', '周期表', '化学', '原子序数', '原子量', '元素符号', '金属', '稀有气体', '学生', '考试'],
+    tip: '元素数据内置在本机，无需联网。'
+  },
+  {
+    id: 'fraction-calculator',
+    name: '分数计算器',
+    desc: '分数四则运算、自动约分与小数互化',
+    category: 'study',
+    icon: '分',
+    keywords: ['分数', '约分', '通分', '四则运算', '小数', '百分数', '分子', '分母', '数学', '学生'],
+    tip: '结果自动化为最简分数，并同时给出小数与百分数。'
+  },
+  {
+    id: 'morse-code',
+    name: '摩斯电码',
+    desc: '英文字母、数字与摩斯电码互相转换',
+    category: 'study',
+    icon: '摩',
+    keywords: ['摩斯', '摩尔斯', '电码', 'Morse', '点划', '密码', '电报', 'SOS'],
+    tip: '摩斯电码仅支持英文字母、数字与常用标点，暂不支持中文。'
+  },
+  {
+    id: 'roman-numeral',
+    name: '罗马数字',
+    desc: '阿拉伯数字与罗马数字互相转换',
+    category: 'study',
+    icon: '罗',
+    keywords: ['罗马数字', '罗马', 'Roman', 'I', 'V', 'X', '阿拉伯数字', '年份', '章节'],
+    tip: '罗马数字标准写法仅支持 1 到 3999 的整数。'
+  },
+  {
+    id: 'json-formatter',
+    name: 'JSON 格式化',
+    desc: '校验、美化、压缩与转义 JSON 文本',
+    category: 'office',
+    icon: '格',
+    keywords: ['JSON', '格式化', '美化', '压缩', '校验', '转义', '缩进', '开发', '接口', '数据'],
+    tip: 'JSON 在本机解析，内容不会上传。'
+  },
+  {
+    id: 'timestamp-converter',
+    name: '时间戳转换',
+    desc: '秒 / 毫秒时间戳与日期时间互相转换',
+    category: 'office',
+    icon: '时',
+    keywords: ['时间戳', 'Unix', 'timestamp', '毫秒', '秒', '日期', '时间', '时区', '开发'],
+    tip: '按手机本地时区换算，不联网校准时间。'
+  },
+  {
+    id: 'base64-codec',
+    name: 'Base64 编解码',
+    desc: '文本与 Base64 互转，正确处理中文',
+    category: 'office',
+    icon: '编',
+    keywords: ['Base64', '编码', '解码', 'base64', 'UTF-8', '中文', '开发', '转义'],
+    tip: '编码与解码都在本机完成，内容不会上传。'
+  },
+  {
+    id: 'url-codec',
+    name: 'URL 编码解码',
+    desc: '网址与文本的百分号编码互相转换',
+    category: 'office',
+    icon: '址',
+    keywords: ['URL', 'url', '网址', '编码', '解码', '百分号', 'percent', '转义', '参数', '开发'],
+    tip: '按 UTF-8 逐字节编码，中文与空格都能正确处理。'
+  },
+  {
+    id: 'uuid-generator',
+    name: 'UUID 生成',
+    desc: '在本机生成 UUID v4，可批量、可去掉横线',
+    category: 'office',
+    icon: '号',
+    keywords: ['UUID', 'GUID', '唯一标识', '随机 ID', 'v4', '开发', '批量'],
+    tip: '优先使用系统安全随机源，生成结果不保存历史。'
   }
 ]
 
@@ -150,5 +240,7 @@ const CATEGORY_NAMES: Record<CategoryId, string> = {
   calc: '计算工具 计算',
   life: '生活工具 生活',
   image: '图片工具 图片 照片',
-  text: '文本工具 文本 文字'
+  text: '文本工具 文本 文字',
+  study: '学习工具 学习 学生 数学 化学 考试',
+  office: '办公工具 办公 效率 开发 程序员 编码'
 }

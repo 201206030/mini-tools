@@ -1,5 +1,5 @@
 /** 工具分类标识 */
-export type CategoryId = 'calc' | 'life' | 'image' | 'text'
+export type CategoryId = 'calc' | 'life' | 'image' | 'text' | 'study' | 'office'
 
 /** 工具分类元数据 */
 export interface Category {

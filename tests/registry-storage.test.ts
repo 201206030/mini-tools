@@ -35,26 +35,28 @@ afterEach(() => {
 })
 
 describe('统一工具注册表', () => {
-  it('注册 12 个工具，ID 唯一，分属 4 个分类', () => {
-    expect(TOOLS).toHaveLength(12)
-    expect(new Set(TOOLS.map((tool) => tool.id)).size).toBe(12)
-    expect(CATEGORIES).toHaveLength(4)
+  it('注册 22 个工具，ID 唯一，分属 6 个分类', () => {
+    expect(TOOLS).toHaveLength(22)
+    expect(new Set(TOOLS.map((tool) => tool.id)).size).toBe(22)
+    expect(CATEGORIES).toHaveLength(6)
     expect(getToolsByCategory('calc')).toHaveLength(4)
     expect(getToolsByCategory('life')).toHaveLength(4)
     expect(getToolsByCategory('image')).toHaveLength(2)
     expect(getToolsByCategory('text')).toHaveLength(2)
+    expect(getToolsByCategory('study')).toHaveLength(5)
+    expect(getToolsByCategory('office')).toHaveLength(5)
   })
 
-  it('所有文案为简体中文且不含开发者专用功能', () => {
+  it('所有工具元数据完整，分类合法、图标为单个中文字符', () => {
+    const categoryIds = new Set(CATEGORIES.map((item) => item.id))
     for (const tool of TOOLS) {
       expect(tool.name.length).toBeGreaterThan(0)
       expect(tool.desc.length).toBeGreaterThan(0)
       expect(tool.keywords.length).toBeGreaterThan(0)
       expect(getCategoryName(tool.category)).not.toBe('')
+      expect(categoryIds.has(tool.category)).toBe(true)
+      expect([...tool.icon].length).toBe(1)
     }
-    const forbidden = ['JSON', 'Base64', 'URL 编码', '正则', 'SQL', 'HTML 格式', 'UUID']
-    const names = TOOLS.map((tool) => tool.name)
-    for (const word of forbidden) expect(names).not.toContain(word)
   })
 
   it('按 ID / 分类 / ID 列表取工具，自动忽略已下线工具', () => {
@@ -77,6 +79,9 @@ describe('统一工具注册表', () => {
     expect(searchTools('QR').map((tool) => tool.id)).toContain('qrcode-generator')
     expect(searchTools('去重').map((tool) => tool.id)).toContain('text-deduplicator')
     expect(searchTools('月供').map((tool) => tool.id)).toContain('mortgage-calculator')
+    expect(searchTools('学习').map((tool) => tool.id)).toContain('periodic-table')
+    expect(searchTools('JSON').map((tool) => tool.id)).toContain('json-formatter')
+    expect(searchTools('Base64').map((tool) => tool.id)).toContain('base64-codec')
   })
 
   it('无收藏时提供默认推荐工具', () => {

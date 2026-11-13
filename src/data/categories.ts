@@ -32,6 +32,22 @@ export const CATEGORIES: Category[] = [
     icon: '文',
     color: '#9270CA',
     tint: '#F1EBFA'
+  },
+  {
+    id: 'study',
+    name: '学习工具',
+    desc: '公式、元素、分数与编码',
+    icon: '学',
+    color: '#E2646B',
+    tint: '#FDEDEE'
+  },
+  {
+    id: 'office',
+    name: '办公工具',
+    desc: 'JSON、时间、编码与标识',
+    icon: '办',
+    color: '#2C9CB0',
+    tint: '#E6F5F8'
   }
 ]
 

@@ -22,8 +22,8 @@
 | 类型 | 说明 | 是否需要先开 Issue 讨论 |
 | --- | --- | --- |
 | 修复缺陷 | 计算结果错误、边界输入、机型兼容、样式错位 | 不需要，但请附上复现步骤 |
-| 新增工具 | 在现有四大分类下补充日常小工具 | 需要，先确认是否符合「纯本地、面向普通用户」的定位 |
-| 补充测试 | 为 `logic.ts` 增加边界与非法输入用例 | 不需要 |
+| 新增工具 | 在现有六大分类下补充纯本地工具 | 需要，先确认是否符合「纯本地、零联网」的定位 |
+| 补充测试 | 为 `logic.ts` / 静态数据模块增加边界与非法输入用例 | 不需要 |
 | 文档改进 | README、注释、说明文案、错别字 | 不需要 |
 | 架构级改动 | 更换框架、引入新依赖、改动注册表结构 | 必须，先讨论方案再动手 |
 
@@ -31,7 +31,7 @@
 
 - **守住纯本地底线**：不引入网络请求、后端服务、云开发、第三方在线 API 或统计 SDK。
 - **隐私优先**：不采集、不上传用户输入内容，不在日志中输出敏感数据；本地存储只保存必要的 ID 与偏好。
-- **面向普通用户**：全简体中文界面，无登录、无会员、无广告、无开发者专属工具。
+- **面向日常使用**：全简体中文界面，无登录、无会员、无广告；工具以日常刚需为主，也包含学习与轻办公场景，但一律零联网、零后端、零第三方 SDK。
 - **保持轻量**：不引入 UI 框架或重型依赖；确需新增依赖时，请在 Issue 中说明理由与许可证兼容性。
 - **一次只做一件事**：一个 PR 聚焦一个主题，便于审查与回滚。
 
@@ -40,8 +40,8 @@
 环境要求：Node.js ≥ 18、npm ≥ 9、微信开发者工具（稳定版，基础库建议 ≥ 2.15.0）。
 
 ```bash
-git clone https://gitee.com/xiongxyang/tools.git
-cd tools
+git clone https://gitee.com/xiongxyang/mini-tools.git
+cd mini-tools
 npm install
 ```
 
@@ -81,7 +81,7 @@ docs(readme): 补充微信开发者工具导入步骤
 
 这些约定来自小程序平台的实际限制与现有架构，改动时请沿用：
 
-- **逻辑与视图分离**：算法放在 `src/tools/<id>/logic.ts` 的纯函数中，`index.vue` 只负责交互；纯函数不得直接调用 `uni` / `wx` API。
+- **逻辑与视图分离**：算法放在 `src/tools/<id>/logic.ts` 的纯函数中（公式、元素等静态数据类工具可放在 `formulas.ts` / `elements.ts`），`index.vue` 只负责交互；纯函数不得直接调用 `uni` / `wx` API。
 - **注册表驱动**：工具元数据统一维护在 `src/data/tools.ts`，首页、搜索、分类、收藏、最近使用均由此派生，不要在页面里硬编码工具列表。
 - **静态导入**：小程序不支持 Vue 动态组件，`src/pages/tool/detail.vue` 采用静态 `import` + `v-if / v-else-if` 条件渲染，新增工具必须同步挂载。
 - **能力走封装层**：复制、保存图片、相册授权、提示弹窗统一使用 `src/services/`；本地存储统一使用 `services/storage.ts`（`wntx_` 前缀、内存降级与损坏容错），不要直接调用 `uni.setStorageSync`。
@@ -90,11 +90,11 @@ docs(readme): 补充微信开发者工具导入步骤
 - **样式**：颜色变量在 `src/styles/variables.scss`（主色 `#3EAF7C`）；不使用 flex `gap` 与 `calc(百分比 - rpx)`，不用 `:last-child` 清零组件间距，避免部分机型解析差异。
 - **类型**：TypeScript 严格模式，避免 `any`；新增类型声明放在 `src/types/`。
 - **版本锁定**：`pinia@2.1.7` 与 `vite@5.2.8` 与 uni 编译器锁定的 Vue 3.4.21 强相关，请勿升级。
-- **测试**：每个 `logic.ts` 配套 `tests/*.test.ts`，覆盖正常值、边界值与非法输入。
+- **测试**：每个 `logic.ts` / 静态数据模块配套 `tests/*.test.ts`，覆盖正常值、边界值与非法输入。
 
 ## 新增一个工具
 
-1. 在 `src/tools/<id>/` 下新增 `index.vue` 与 `logic.ts`。
+1. 在 `src/tools/<id>/` 下新增 `index.vue` 与 `logic.ts`（纯静态数据类工具可用 `formulas.ts` / `elements.ts` 等命名）。
 2. 在 `src/data/tools.ts` 的 `TOOLS` 数组追加一条元数据：
 
    ```ts
@@ -102,7 +102,7 @@ docs(readme): 补充微信开发者工具导入步骤
      id: 'my-tool',
      name: '示例工具',
      desc: '一句话说明这个工具能做什么',
-     category: 'calc', // calc | life | image | text
+     category: 'calc', // calc | life | image | text | study | office
      icon: '例',       // 单个汉字线性图标，不使用 Emoji
      keywords: ['示例', '关键词'],
      recommended: false,
@@ -111,7 +111,7 @@ docs(readme): 补充微信开发者工具导入步骤
    ```
 
 3. 在 `src/pages/tool/detail.vue` 静态导入组件，并追加一组 `v-else-if` 分支。
-4. 在 `tests/` 中为 `logic.ts` 补充单元测试。
+4. 在 `tests/` 中为纯逻辑 / 静态数据模块补充单元测试。
 
 完成后，首页展示、分类、搜索、收藏、最近使用会自动生效，无需改动其他页面。
 

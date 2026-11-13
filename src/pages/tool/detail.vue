@@ -7,7 +7,7 @@ import { showInfo } from '@/services/feedback'
 import ToolHeader from '@/components/ToolHeader.vue'
 import EmptyState from '@/components/EmptyState.vue'
 
-// 12 个工具均为独立业务模块，静态挂载以适配小程序不支持动态组件的约束
+// 所有工具均为独立业务模块，静态挂载以适配小程序不支持动态组件的约束
 import DateCalculator from '@/tools/date-calculator/index.vue'
 import UnitConverter from '@/tools/unit-converter/index.vue'
 import MortgageCalculator from '@/tools/mortgage-calculator/index.vue'
@@ -20,6 +20,16 @@ import ImageCompressor from '@/tools/image-compressor/index.vue'
 import ImageResizer from '@/tools/image-resizer/index.vue'
 import WordCounter from '@/tools/word-counter/index.vue'
 import TextDeduplicator from '@/tools/text-deduplicator/index.vue'
+import MathFormulas from '@/tools/math-formulas/index.vue'
+import PeriodicTable from '@/tools/periodic-table/index.vue'
+import FractionCalculator from '@/tools/fraction-calculator/index.vue'
+import MorseCode from '@/tools/morse-code/index.vue'
+import RomanNumeral from '@/tools/roman-numeral/index.vue'
+import JsonFormatter from '@/tools/json-formatter/index.vue'
+import TimestampConverter from '@/tools/timestamp-converter/index.vue'
+import Base64Codec from '@/tools/base64-codec/index.vue'
+import UrlCodec from '@/tools/url-codec/index.vue'
+import UuidGenerator from '@/tools/uuid-generator/index.vue'
 
 const store = useAppStore()
 const toolId = ref('')
@@ -65,6 +75,16 @@ function goHome() {
         <ImageResizer v-else-if="tool.id === 'image-resizer'" />
         <WordCounter v-else-if="tool.id === 'word-counter'" />
         <TextDeduplicator v-else-if="tool.id === 'text-deduplicator'" />
+        <MathFormulas v-else-if="tool.id === 'math-formulas'" />
+        <PeriodicTable v-else-if="tool.id === 'periodic-table'" />
+        <FractionCalculator v-else-if="tool.id === 'fraction-calculator'" />
+        <MorseCode v-else-if="tool.id === 'morse-code'" />
+        <RomanNumeral v-else-if="tool.id === 'roman-numeral'" />
+        <JsonFormatter v-else-if="tool.id === 'json-formatter'" />
+        <TimestampConverter v-else-if="tool.id === 'timestamp-converter'" />
+        <Base64Codec v-else-if="tool.id === 'base64-codec'" />
+        <UrlCodec v-else-if="tool.id === 'url-codec'" />
+        <UuidGenerator v-else-if="tool.id === 'uuid-generator'" />
       </view>
 
       <view class="detail__footer">本工具在本机完成处理，不会上传你的输入内容</view>
