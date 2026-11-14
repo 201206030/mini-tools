@@ -9,8 +9,10 @@ import {
 } from '@/tools/random-name/names'
 import {
   MAX_NAME_COUNT,
+  MAX_SURNAME_OPTIONS,
   MIN_NAME_COUNT,
   generateNames,
+  parseSurnames,
   type GenerateNamesOptions,
   type NameGender,
   type NameLength
@@ -63,6 +65,89 @@ describe('随机姓名静态素材', () => {
       for (const char of set.single) expect(Array.from(char)).toHaveLength(1)
       for (const word of set.double) expect(Array.from(word)).toHaveLength(2)
     }
+  })
+})
+
+describe('parseSurnames', () => {
+  it('留空与纯空白表示随机取姓', () => {
+    expect(parseSurnames('')).toEqual({ ok: true, value: [] })
+    expect(parseSurnames('   \n\t ')).toEqual({ ok: true, value: [] })
+  })
+
+  it('支持单姓、复姓及多种分隔符，并按首次出现顺序去重', () => {
+    const outcome = parseSurnames('  李，王  欧阳、司马;上官/诸葛|李  ')
+    expect(outcome).toEqual({ ok: true, value: ['李', '王', '欧阳', '司马', '上官', '诸葛'] })
+    expect(parseSurnames('欧阳')).toEqual({ ok: true, value: ['欧阳'] })
+  })
+
+  it('非汉字、数字、英文与超长输入给出中文错误', () => {
+    for (const bad of ['张3', 'Smith', '李@', 'abc123', '中华人民共和国万年']) {
+      const outcome = parseSurnames(bad)
+      expect(outcome.ok).toBe(false)
+      if (!outcome.ok) expect(outcome.message).toContain('不是有效姓氏')
+    }
+    expect(parseSurnames(null as unknown as string).ok).toBe(false)
+    expect(parseSurnames(123 as unknown as string).ok).toBe(false)
+  })
+
+  it('姓氏数量超过上限时拒绝', () => {
+    const raw = Array.from({ length: MAX_SURNAME_OPTIONS + 1 }, (_, i) =>
+      String.fromCharCode(0x4e00 + i)
+    ).join(',')
+    const outcome = parseSurnames(raw)
+    expect(outcome.ok).toBe(false)
+    if (!outcome.ok) expect(outcome.message).toContain(String(MAX_SURNAME_OPTIONS))
+  })
+})
+
+describe('generateNames 指定姓氏', () => {
+  it('只指定一个姓时，所有结果都以该姓开头且仍互不重复', () => {
+    const names = must(
+      generateNames(options({ count: 20, length: 'mix', pick: makePick(101), surnames: ['李'] }))
+    )
+    expect(names).toHaveLength(20)
+    for (const name of names) expect(name.startsWith('李')).toBe(true)
+    expect(new Set(names).size).toBe(20)
+  })
+
+  it('指定复姓可用，且「包含复姓」开关与默认复姓不再生效', () => {
+    const names = must(
+      generateNames(
+        options({ count: 10, length: 'single', compoundRate: 1, pick: makePick(102), surnames: ['欧阳'] })
+      )
+    )
+    for (const name of names) expect(name.startsWith('欧阳')).toBe(true)
+    for (const name of names) expect(Array.from(name)).toHaveLength(3)
+
+    const randomSurnames = must(generateNames(options({ count: 10, compoundRate: 1, pick: makePick(103) })))
+    for (const name of randomSurnames) {
+      expect(COMPOUND_SURNAMES.some((item) => name.startsWith(item))).toBe(true)
+    }
+  })
+
+  it('可指定多个姓氏，结果全部落在指定池内，性别与字数选项仍生效', () => {
+    const surnames = ['赵', '钱', '欧阳']
+    const names = must(
+      generateNames(
+        options({ count: 20, gender: 'female', length: 'double', pick: makePick(104), surnames })
+      )
+    )
+    expect(names).toHaveLength(20)
+    for (const name of names) {
+      expect(surnames.some((item) => name.startsWith(item))).toBe(true)
+      expect(Array.from(name).length).toBeGreaterThanOrEqual(3)
+    }
+    expect(new Set(names.filter((name) => name.startsWith('赵'))).size).toBeGreaterThan(0)
+  })
+
+  it('非法指定姓氏给出中文错误，重复姓氏被归一化', () => {
+    expect(generateNames(options({ surnames: ['李3'] })).ok).toBe(false)
+    expect(generateNames(options({ surnames: [''] })).ok).toBe(false)
+    expect(generateNames(options({ surnames: '李' as unknown as string[] })).ok).toBe(false)
+    expect(generateNames(options({ surnames: Array(MAX_SURNAME_OPTIONS + 1).fill('张') })).ok).toBe(false)
+    const deduped = must(generateNames(options({ count: 5, surnames: ['李', '李'], pick: makePick(105) })))
+    expect(deduped).toHaveLength(5)
+    for (const name of deduped) expect(name.startsWith('李')).toBe(true)
   })
 })
 
