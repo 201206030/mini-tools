@@ -41,7 +41,10 @@ function countOf(id: string): number {
   position: relative;
   border-radius: 20rpx;
   padding: 24rpx 22rpx;
-  min-height: 150rpx;
+  /* 描述固定两行后，所有卡片的自然高度一致；这里再给一个统一的最小高度兜底，
+     避免不同机型字体行高差异让某一排卡片变矮。 */
+  min-height: 230rpx;
+  box-sizing: border-box;
   border: 2rpx solid transparent;
 }
 .category-card--active { border-color: #3eaf7c; }
@@ -59,7 +62,19 @@ function countOf(id: string): number {
   margin-bottom: 14rpx;
 }
 .category-card__name { font-size: 29rpx; font-weight: 600; color: #333333; }
-.category-card__desc { font-size: 22rpx; color: #7c8580; margin-top: 4rpx; }
+.category-card__desc {
+  font-size: 22rpx;
+  color: #7c8580;
+  margin-top: 4rpx;
+  line-height: 1.45;
+  /* 固定占两行：短描述（如「压缩、尺寸、取色与编码」）不再让中间一排卡片矮一截；
+     超长描述最多显示两行，避免个别机型折三行再次撑高该排。 */
+  min-height: 64rpx;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
 .category-card__count {
   position: absolute;
   top: 24rpx;

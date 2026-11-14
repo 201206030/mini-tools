@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://www.xxyopen.com/images/resource/os/tools/logo.jpeg" alt="一键工具狗 Logo" width="120" height="120" style="display:block;margin:0 auto;">
   <h1 style="margin:6px 0 8px;padding:0;border:0;font-size:30px;">一键工具狗</h1>
-  一款隐私优先的微信小程序工具合集，主打本机处理、免登录，除汇率外无需联网。<br>
+  一款隐私优先的微信小程序工具合集，主打本机处理、免登录，离线可用。<br>
   <br>
   <a href="https://gitee.com/xiongxyang/mini-tools"><img src="https://img.shields.io/badge/Gitee-mini--tools-C71D23?logo=gitee&amp;logoColor=white" alt="Gitee 仓库"></a>
   <a href="https://github.com/201206030/mini-tools"><img src="https://img.shields.io/badge/GitHub-mini--tools-181717?logo=github" alt="GitHub 仓库"></a>

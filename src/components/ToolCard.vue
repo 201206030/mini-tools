@@ -88,6 +88,8 @@ const emit = defineEmits<{
   margin-top: 6rpx;
 }
 .tool-card--grid .tool-card__desc {
+  /* 与分类卡片同理：固定两行高度，单行描述与两行描述的网格卡片保持等高 */
+  min-height: 64rpx;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
