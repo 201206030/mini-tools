@@ -9,12 +9,12 @@ export const TOOLS: ToolMeta[] = [
   {
     id: 'date-calculator',
     name: '日期计算器',
-    desc: '算相隔天数、前后 N 天、还有多少天',
+    desc: '相隔天数、前后 N 天、工作日计算与倒计时',
     category: 'calc',
     icon: '日',
-    keywords: ['日期', '天数', '相隔', '倒计时', '还有多少天', '闰年', '纪念日', '生日', '考试', '合同', '年月日'],
+    keywords: ['日期', '天数', '相隔', '倒计时', '还有多少天', '闰年', '纪念日', '生日', '考试', '合同', '年月日', '工作日', '上班', '调休', '补班', '考勤', '几个工作日'],
     recommended: true,
-    tip: '日期按日历天数计算，不依赖手机时区。'
+    tip: '日期按日历天数计算，不依赖手机时区；工作日默认按周一至周五，可自行添加放假与补班日期。'
   },
   {
     id: 'unit-converter',
@@ -44,12 +44,12 @@ export const TOOLS: ToolMeta[] = [
   {
     id: 'qrcode-generator',
     name: '二维码生成',
-    desc: '把文字、网址生成二维码并保存到相册',
+    desc: '文字、网址、名片与 Wi-Fi 二维码，可保存到相册',
     category: 'life',
     icon: '码',
-    keywords: ['二维码', 'QR', '扫码', '网址', '链接', '名片', '保存图片'],
+    keywords: ['二维码', 'QR', '扫码', '网址', '链接', '名片', '保存图片', 'Wi-Fi', 'WiFi', '无线网', '连网', '热点', '扫码连网', '网络密码'],
     recommended: true,
-    tip: '二维码在本机生成，内容不会上传。'
+    tip: '二维码在本机生成，Wi-Fi 名称与密码不会上传。'
   },
   {
     id: 'random-number',
@@ -210,6 +210,117 @@ export const TOOLS: ToolMeta[] = [
     icon: '号',
     keywords: ['UUID', 'GUID', '唯一标识', '随机 ID', 'v4', '开发', '批量'],
     tip: '优先使用系统安全随机源，生成结果不保存历史。'
+  },
+
+  // 计算工具：健康与作息
+  {
+    id: 'bmi-calculator',
+    name: 'BMI 计算器',
+    desc: '按身高体重算 BMI，给出中国 / WHO 标准与理想体重',
+    category: 'calc',
+    icon: '康',
+    keywords: ['BMI', '体重指数', '身高', '体重', '肥胖', '超重', '偏瘦', '标准体重', '健康', '减肥', '塑形'],
+    tip: '按成人标准估算，儿童、孕妇与运动员不适用，结果仅供参考。'
+  },
+  {
+    id: 'body-fat-calculator',
+    name: '体脂率计算器',
+    desc: '用 BMI 或腰围、颈围、臀围估算体脂率',
+    category: 'calc',
+    icon: '脂',
+    keywords: ['体脂', '体脂率', '体脂肪', '脂肪率', '腰围', '颈围', '臀围', '去脂体重', '健身', 'BMI'],
+    tip: '公式估算，不等同于体脂秤或医学测量结果。'
+  },
+  {
+    id: 'sleep-calculator',
+    name: '睡眠计算器',
+    desc: '按 90 分钟睡眠周期推荐入睡或起床时间',
+    category: 'calc',
+    icon: '眠',
+    keywords: ['睡眠', '睡觉', '起床', '入睡', '睡眠周期', '生物钟', '作息', '闹钟', '几点睡', '作息时间'],
+    tip: '按 90 分钟睡眠周期估算，个体差异较大，仅供参考。'
+  },
+
+  // 生活工具
+  {
+    id: 'random-name',
+    name: '随机姓名',
+    desc: '随机生成中文姓名，可选性别、单双字名与复姓',
+    category: 'life',
+    icon: '名',
+    keywords: ['姓名', '名字', '随机姓名', '起名', '取名', '人名', '复姓', '百家姓', '生成姓名', '昵称', '马甲'],
+    tip: '姓名为随机组合，仅供取名参考、游戏昵称或测试数据使用，不代表真实人物。'
+  },
+
+  // 文本工具
+  {
+    id: 'text-diff',
+    name: '文本对比',
+    desc: '按行比较两段文本，标出新增与删除的内容',
+    category: 'text',
+    icon: '比',
+    keywords: ['文本对比', '文本比较', '差异', 'diff', '比对', '不同', '行对比', '改动', '版本对比'],
+    tip: '按行对比，两侧各最多 300 行；文本只在本机处理，不会上传。'
+  },
+
+  // 学习工具
+  {
+    id: 'prime-number',
+    name: '质数查询',
+    desc: '判断质数、查区间质数、分解质因数',
+    category: 'study',
+    icon: '质',
+    keywords: ['质数', '素数', '质因数', '分解质因数', '因数', '合数', '判质数', '数学', '学生', '考试'],
+    tip: '1 不是质数；数值上限 10 亿，区间跨度上限 10000。'
+  },
+
+  // 办公工具
+  {
+    id: 'base-converter',
+    name: '进制转换',
+    desc: '2～36 进制整数互转，支持超长数值',
+    category: 'office',
+    icon: '进',
+    keywords: ['进制', '进制转换', '二进制', '八进制', '十进制', '十六进制', 'binary', 'hex', '转换', '程序员'],
+    tip: '仅支持整数，超大数值用字符串算法计算，不受数字精度限制。'
+  },
+  {
+    id: 'ascii-table',
+    name: 'ASCII 编码表',
+    desc: '128 个 ASCII 字符速查，可按码值、字符或名称搜索',
+    category: 'office',
+    icon: '表',
+    keywords: ['ASCII', '编码表', '字符表', '控制字符', '码表', '码值', '字符', '对照表'],
+    tip: 'ASCII 共 128 个字符，数据内置在本机，无需联网。'
+  },
+  {
+    id: 'unicode-converter',
+    name: 'Unicode 转换',
+    desc: '字符与 \\u、U+、HTML 实体、UTF-8 字节互转',
+    category: 'office',
+    icon: '符',
+    keywords: ['Unicode', '码点', 'U+', 'UTF-8', '转义', '编码', 'Emoji', '代理对', '字符编码'],
+    tip: '按 Unicode 码点处理，Emoji 等增补平面字符也能正确转换。'
+  },
+
+  // 图片工具
+  {
+    id: 'image-color-picker',
+    name: '图片取色器',
+    desc: '从照片提取网格色与主色调，点击复制 HEX',
+    category: 'image',
+    icon: '色',
+    keywords: ['取色', '取色器', '颜色', '色值', 'HEX', 'RGB', 'HSL', '主色调', '调色', '配色', '色卡'],
+    tip: '图片全程在本机读取像素取色，不会上传。'
+  },
+  {
+    id: 'image-to-base64',
+    name: '图片转 Base64',
+    desc: '把小图片转成 Base64 或 Data URI 文本',
+    category: 'image',
+    icon: '串',
+    keywords: ['Base64', '图片', '图片转Base64', 'Data URI', '图片编码', '内嵌图片', 'data:image', '转文本'],
+    tip: '图片限制 1MB 以内，转换只在本机完成，不会上传；Base64 文本约为原文件体积的 4/3。'
   }
 ]
 

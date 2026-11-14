@@ -101,3 +101,53 @@ export function buildContactCard(card: ContactCard): string {
   const email = escapeMecard(card.email.trim())
   return `MECARD:N:${name};TEL:${phone};EMAIL:${email};;`
 }
+
+// ---------------------------------------------------------------------------
+// Wi-Fi 二维码
+// ---------------------------------------------------------------------------
+
+export type WifiAuth = 'WPA' | 'WEP' | 'nopass'
+
+export interface WifiConfig {
+  ssid: string
+  password: string
+  auth: WifiAuth
+  hidden: boolean
+}
+
+export const WIFI_SSID_MAX = 32
+export const WIFI_PASSWORD_MAX = 64
+
+/** Wi-Fi 字段值转义：反斜杠、分号、逗号、冒号、双引号，参考 escapeMecard 写法 */
+function escapeWifi(value: string): string {
+  return String(value || '')
+    .replace(/[\r\n]+/g, ' ')
+    .replace(/([\\;,:"])/g, '\\$1')
+}
+
+/** Wi-Fi 配置校验；返回中文错误或 null */
+export function validateWifiConfig(config: WifiConfig): string | null {
+  const ssid = String(config.ssid || '').trim()
+  const password = String(config.password || '')
+  if (!ssid) return '请输入网络名称（SSID）'
+  if (Array.from(ssid).length > WIFI_SSID_MAX) return `网络名称不能超过 ${WIFI_SSID_MAX} 个字符`
+  if (config.auth !== 'nopass' && !password.trim()) return '请输入 Wi-Fi 密码'
+  if (Array.from(password).length > WIFI_PASSWORD_MAX) return `密码不能超过 ${WIFI_PASSWORD_MAX} 个字符`
+  return null
+}
+
+/**
+ * 生成标准 Wi-Fi 二维码文本：
+ * WIFI:T:<认证>;S:<网络名>;P:<密码>;H:<是否隐藏>;;
+ * nopass 时不包含 P 字段。
+ */
+export function buildWifiContent(config: WifiConfig): string {
+  const ssid = escapeWifi(String(config.ssid || '').trim())
+  const hidden = config.hidden ? 'true' : 'false'
+  let content = `WIFI:T:${config.auth};S:${ssid};`
+  if (config.auth !== 'nopass') {
+    content += `P:${escapeWifi(String(config.password || ''))};`
+  }
+  content += `H:${hidden};;`
+  return content
+}

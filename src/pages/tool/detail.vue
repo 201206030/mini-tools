@@ -31,6 +31,17 @@ import TimestampConverter from '@/tools/timestamp-converter/index.vue'
 import Base64Codec from '@/tools/base64-codec/index.vue'
 import UrlCodec from '@/tools/url-codec/index.vue'
 import UuidGenerator from '@/tools/uuid-generator/index.vue'
+import BmiCalculator from '@/tools/bmi-calculator/index.vue'
+import BodyFatCalculator from '@/tools/body-fat-calculator/index.vue'
+import SleepCalculator from '@/tools/sleep-calculator/index.vue'
+import RandomName from '@/tools/random-name/index.vue'
+import TextDiff from '@/tools/text-diff/index.vue'
+import PrimeNumber from '@/tools/prime-number/index.vue'
+import BaseConverter from '@/tools/base-converter/index.vue'
+import AsciiTable from '@/tools/ascii-table/index.vue'
+import UnicodeConverter from '@/tools/unicode-converter/index.vue'
+import ImageColorPicker from '@/tools/image-color-picker/index.vue'
+import ImageToBase64 from '@/tools/image-to-base64/index.vue'
 
 const store = useAppStore()
 const toolId = ref('')
@@ -87,6 +98,17 @@ function goHome() {
         <Base64Codec v-else-if="tool.id === 'base64-codec'" />
         <UrlCodec v-else-if="tool.id === 'url-codec'" />
         <UuidGenerator v-else-if="tool.id === 'uuid-generator'" />
+        <BmiCalculator v-else-if="tool.id === 'bmi-calculator'" />
+        <BodyFatCalculator v-else-if="tool.id === 'body-fat-calculator'" />
+        <SleepCalculator v-else-if="tool.id === 'sleep-calculator'" />
+        <RandomName v-else-if="tool.id === 'random-name'" />
+        <TextDiff v-else-if="tool.id === 'text-diff'" />
+        <PrimeNumber v-else-if="tool.id === 'prime-number'" />
+        <BaseConverter v-else-if="tool.id === 'base-converter'" />
+        <AsciiTable v-else-if="tool.id === 'ascii-table'" />
+        <UnicodeConverter v-else-if="tool.id === 'unicode-converter'" />
+        <ImageColorPicker v-else-if="tool.id === 'image-color-picker'" />
+        <ImageToBase64 v-else-if="tool.id === 'image-to-base64'" />
       </view>
 
       <view class="detail__footer">本工具在本机完成处理，不会上传你的输入内容</view>

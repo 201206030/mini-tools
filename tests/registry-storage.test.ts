@@ -35,16 +35,16 @@ afterEach(() => {
 })
 
 describe('统一工具注册表', () => {
-  it('注册 23 个工具，ID 唯一，分属 6 个分类', () => {
-    expect(TOOLS).toHaveLength(23)
-    expect(new Set(TOOLS.map((tool) => tool.id)).size).toBe(23)
+  it('注册 34 个工具，ID 唯一，分属 6 个分类', () => {
+    expect(TOOLS).toHaveLength(34)
+    expect(new Set(TOOLS.map((tool) => tool.id)).size).toBe(34)
     expect(CATEGORIES).toHaveLength(6)
-    expect(getToolsByCategory('calc')).toHaveLength(5)
-    expect(getToolsByCategory('life')).toHaveLength(4)
-    expect(getToolsByCategory('image')).toHaveLength(2)
-    expect(getToolsByCategory('text')).toHaveLength(2)
-    expect(getToolsByCategory('study')).toHaveLength(5)
-    expect(getToolsByCategory('office')).toHaveLength(5)
+    expect(getToolsByCategory('calc')).toHaveLength(8)
+    expect(getToolsByCategory('life')).toHaveLength(5)
+    expect(getToolsByCategory('image')).toHaveLength(4)
+    expect(getToolsByCategory('text')).toHaveLength(3)
+    expect(getToolsByCategory('study')).toHaveLength(6)
+    expect(getToolsByCategory('office')).toHaveLength(8)
   })
 
   it('所有工具元数据完整，分类合法、图标为单个中文字符', () => {
@@ -65,7 +65,9 @@ describe('统一工具注册表', () => {
     expect(getToolsByIds(['none', 'word-counter', 'text-deduplicator'])).toHaveLength(2)
     expect(getToolsByCategory('image').map((tool) => tool.id)).toEqual([
       'image-compressor',
-      'image-resizer'
+      'image-resizer',
+      'image-color-picker',
+      'image-to-base64'
     ])
   })
 
@@ -83,6 +85,21 @@ describe('统一工具注册表', () => {
     expect(searchTools('JSON').map((tool) => tool.id)).toContain('json-formatter')
     expect(searchTools('Base64').map((tool) => tool.id)).toContain('base64-codec')
     expect(searchTools('汇率').map((tool) => tool.id)).toContain('exchange-rate')
+    // 复用已有工具的新模式：搜索需求名应命中对应工具，而不是新建重复工具
+    expect(searchTools('工作日').map((tool) => tool.id)).toContain('date-calculator')
+    expect(searchTools('Wi-Fi').map((tool) => tool.id)).toContain('qrcode-generator')
+    // 本轮新增工具均可被搜索命中
+    expect(searchTools('BMI').map((tool) => tool.id)).toContain('bmi-calculator')
+    expect(searchTools('体脂').map((tool) => tool.id)).toContain('body-fat-calculator')
+    expect(searchTools('睡眠').map((tool) => tool.id)).toContain('sleep-calculator')
+    expect(searchTools('姓名').map((tool) => tool.id)).toContain('random-name')
+    expect(searchTools('文本对比').map((tool) => tool.id)).toContain('text-diff')
+    expect(searchTools('质数').map((tool) => tool.id)).toContain('prime-number')
+    expect(searchTools('进制').map((tool) => tool.id)).toContain('base-converter')
+    expect(searchTools('ASCII').map((tool) => tool.id)).toContain('ascii-table')
+    expect(searchTools('Unicode').map((tool) => tool.id)).toContain('unicode-converter')
+    expect(searchTools('取色').map((tool) => tool.id)).toContain('image-color-picker')
+    expect(searchTools('图片转Base64').map((tool) => tool.id)).toContain('image-to-base64')
   })
 
   it('无收藏时提供默认推荐工具', () => {

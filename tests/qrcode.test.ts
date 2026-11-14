@@ -2,10 +2,13 @@ import { describe, expect, it } from 'vitest'
 import {
   MAX_QR_CHARS,
   buildContactCard,
+  buildWifiContent,
   createQrMatrix,
   utf8Bytes,
   validateContactCard,
-  validateQrContent
+  validateQrContent,
+  validateWifiConfig,
+  type WifiConfig
 } from '@/tools/qrcode-generator/logic'
 
 describe('二维码 UTF-8 编码', () => {
@@ -88,5 +91,68 @@ describe('联系人名片', () => {
   it('名片文本可直接生成二维码', () => {
     const card = buildContactCard({ name: '张三', phone: '13800138000', email: 'a@b.com' })
     expect(createQrMatrix(card).ok).toBe(true)
+  })
+})
+
+describe('Wi-Fi 二维码', () => {
+  const wifi = (overrides: Partial<WifiConfig> = {}): WifiConfig => ({
+    ssid: 'MyWifi',
+    password: '12345678',
+    auth: 'WPA',
+    hidden: false,
+    ...overrides
+  })
+
+  it('WPA 生成标准 WIFI: 串（结尾两个分号）', () => {
+    expect(buildWifiContent(wifi())).toBe('WIFI:T:WPA;S:MyWifi;P:12345678;H:false;;')
+  })
+
+  it('nopass 不包含 P 字段且固定格式', () => {
+    expect(buildWifiContent(wifi({ ssid: 'OpenNet', password: '', auth: 'nopass' }))).toBe(
+      'WIFI:T:nopass;S:OpenNet;H:false;;'
+    )
+    expect(buildWifiContent(wifi({ password: '', auth: 'nopass' }))).not.toContain('P:')
+  })
+
+  it('隐藏网络标记 H:true', () => {
+    expect(buildWifiContent(wifi({ hidden: true }))).toBe('WIFI:T:WPA;S:MyWifi;P:12345678;H:true;;')
+  })
+
+  it('SSID 与密码中的 \\ ; , : " 均用反斜杠转义', () => {
+    expect(buildWifiContent(wifi({ ssid: 'Cafe;Guest', password: 'p:a,s;s' }))).toBe(
+      'WIFI:T:WPA;S:Cafe\\;Guest;P:p\\:a\\,s\\;s;H:false;;'
+    )
+    expect(buildWifiContent(wifi({ ssid: 'x"y\\z', password: 'pw', auth: 'WEP' }))).toBe(
+      'WIFI:T:WEP;S:x\\"y\\\\z;P:pw;H:false;;'
+    )
+  })
+
+  it('SSID 空或非 nopass 时密码空给出中文校验错误', () => {
+    expect(validateWifiConfig(wifi({ ssid: '' }))).toContain('网络名称')
+    expect(validateWifiConfig(wifi({ ssid: '   ' }))).toContain('网络名称')
+    expect(validateWifiConfig(wifi({ password: '' }))).toContain('密码')
+    expect(validateWifiConfig(wifi({ password: '', auth: 'nopass' }))).toBeNull()
+    expect(validateWifiConfig(wifi())).toBeNull()
+  })
+
+  it('SSID 超 32、密码超 64 给出中文提示', () => {
+    expect(validateWifiConfig(wifi({ ssid: 'a'.repeat(33) }))).toContain('32')
+    expect(validateWifiConfig(wifi({ password: 'p'.repeat(65) }))).toContain('64')
+    expect(validateWifiConfig(wifi({ ssid: 'a'.repeat(33), auth: 'nopass', password: '' }))).toContain('32')
+  })
+
+  it('buildWifiContent 结果可直接 createQrMatrix', () => {
+    for (const config of [
+      wifi(),
+      wifi({ ssid: 'OpenNet', password: '', auth: 'nopass' }),
+      wifi({ hidden: true }),
+      wifi({ ssid: 'Cafe;Guest', password: 'p:a,s;s' })
+    ]) {
+      const result = createQrMatrix(buildWifiContent(config))
+      expect(result.ok).toBe(true)
+      if (!result.ok) continue
+      expect(result.value.size % 4).toBe(1)
+      expect(result.value.modules).toHaveLength(result.value.size)
+    }
   })
 })

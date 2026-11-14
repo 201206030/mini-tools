@@ -17,9 +17,16 @@ import {
 import {
   MAX_OFFSET_DAYS,
   buildIntervalSummary,
+  buildWorkdaySummary,
   calcCountdown,
   calcInterval,
-  calcOffset
+  calcOffset,
+  calcWorkdays,
+  calcWorkdayOffset,
+  isWorkday,
+  parseWorkdayDateList,
+  type WorkdayOptions,
+  type WorkdayStat
 } from '@/tools/date-calculator/logic'
 
 const d = (year: number, month: number, day: number): CivilDate => ({ year, month, day })
@@ -188,5 +195,150 @@ describe('日期计算器业务逻辑', () => {
     expect(past.ok && past.value.days).toBe(-5)
     expect(past.ok && past.value.direction).toBe('past')
     expect(calcCountdown('2025-02-30', today).ok).toBe(false)
+  })
+})
+
+describe('工作日计算', () => {
+  const opts = (daysOff: string[] = [], makeUpDays: string[] = []): WorkdayOptions => ({ daysOff, makeUpDays })
+  const value = <T>(result: { ok: true; value: T } | { ok: false; message: string }): T => {
+    if (!result.ok) throw new Error('期望计算成功')
+    return result.value
+  }
+
+  it('纯工作周区间：周一至周五为 5 个工作日', () => {
+    const r = value(calcWorkdays('2026-01-05', '2026-01-09', opts()))
+    expect(r.workdays).toBe(5)
+    expect(r.totalDays).toBe(5)
+    expect(r.weekendDays).toBe(0)
+    expect(r.startWeekday).toBe('星期一')
+    expect(r.endWeekday).toBe('星期五')
+  })
+
+  it('含周末：周六周日计为休息日', () => {
+    const r = value(calcWorkdays('2026-01-05', '2026-01-11', opts()))
+    expect(r.workdays).toBe(5)
+    expect(r.totalDays).toBe(7)
+    expect(r.weekendDays).toBe(2)
+  })
+
+  it('跨月跨年区间统计正确', () => {
+    const r = value(calcWorkdays('2025-12-29', '2026-01-04', opts()))
+    expect(r.workdays).toBe(5)
+    expect(r.totalDays).toBe(7)
+    expect(r.weekendDays).toBe(2)
+    expect(r.startWeekday).toBe('星期一')
+    expect(r.endWeekday).toBe('星期日')
+  })
+
+  it('daysOff 额外休息日生效（工作日强制休息）', () => {
+    const r = value(calcWorkdays('2026-01-05', '2026-01-09', opts(['2026-01-06'])))
+    expect(r.workdays).toBe(4)
+    expect(r.daysOffCount).toBe(1)
+  })
+
+  it('makeUpDays 周末补班日生效（周末强制上班）', () => {
+    const r = value(calcWorkdays('2026-01-05', '2026-01-11', opts([], ['2026-01-10'])))
+    expect(r.workdays).toBe(6)
+    expect(r.makeUpCount).toBe(1)
+    expect(r.weekendDays).toBe(1)
+  })
+
+  it('daysOff 与 makeUpDays 同时命中时补班优先', () => {
+    const r = value(calcWorkdays('2026-01-05', '2026-01-11', opts(['2026-01-10'], ['2026-01-10'])))
+    expect(r.workdays).toBe(6)
+    expect(r.makeUpCount).toBe(1)
+    expect(r.daysOffCount).toBe(0)
+    expect(isWorkday(d(2026, 1, 10), opts(['2026-01-10'], ['2026-01-10']))).toBe(true)
+    expect(isWorkday(d(2026, 1, 9), opts())).toBe(true)
+    expect(isWorkday(d(2026, 1, 10), opts())).toBe(false)
+    expect(isWorkday(d(2026, 1, 9), opts(['2026-01-09']))).toBe(false)
+  })
+
+  it('start > end 自动交换并规范化起止星期', () => {
+    const r = value(calcWorkdays('2026-01-09', '2026-01-05', opts()))
+    expect(r.workdays).toBe(5)
+    expect(r.startWeekday).toBe('星期一')
+    expect(r.endWeekday).toBe('星期五')
+  })
+
+  it('非法日期返回中文错误', () => {
+    const bad = calcWorkdays('2026-02-30', '2026-01-05', opts())
+    expect(bad.ok).toBe(false)
+    if (!bad.ok) expect(bad.message).toContain('YYYY-MM-DD')
+    expect(calcWorkdays('', '2026-01-05', opts()).ok).toBe(false)
+    const badOffset = calcWorkdayOffset('abc', 3, opts())
+    expect(badOffset.ok).toBe(false)
+    if (!badOffset.ok) expect(badOffset.message).toContain('YYYY-MM-DD')
+  })
+
+  it('options 中非法日期忽略、去 trim 去重，不报错', () => {
+    const r = value(calcWorkdays('2026-01-05', '2026-01-05', opts(['bad', '2026-13-40', ' 2026-01-06 ', '2026-01-06'], ['   '])))
+    expect(r.workdays).toBe(1)
+    expect(r.daysOffCount).toBe(0)
+    expect(r.makeUpCount).toBe(0)
+  })
+
+  it('跨度超过 36500 天给出中文错误', () => {
+    const r = calcWorkdays('1900-01-01', '2000-01-01', opts())
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.message).toContain('36500')
+  })
+
+  it('offset 正向与负向推算及实际扫描自然日数', () => {
+    const after = value(calcWorkdayOffset('2026-01-09', 1, opts()))
+    expect(after.date).toBe('2026-01-12')
+    expect(after.weekday).toBe('星期一')
+    expect(after.scannedDays).toBe(3)
+    const before = value(calcWorkdayOffset('2026-01-12', -1, opts()))
+    expect(before.date).toBe('2026-01-09')
+    expect(before.weekday).toBe('星期五')
+    expect(before.scannedDays).toBe(3)
+  })
+
+  it('offset 为 0：工作日返回自身，休息日顺延到下一个工作日', () => {
+    const same = value(calcWorkdayOffset('2026-01-09', 0, opts()))
+    expect(same.date).toBe('2026-01-09')
+    expect(same.scannedDays).toBe(0)
+    const roll = value(calcWorkdayOffset('2026-01-10', 0, opts()))
+    expect(roll.date).toBe('2026-01-12')
+    expect(roll.scannedDays).toBe(2)
+  })
+
+  it('offset 跳过周末与自定义休息日，并认可补班日', () => {
+    // 周五 +1 个工作日：正常应为周一，周一被设为额外休息日后顺延到周二
+    const skip = value(calcWorkdayOffset('2026-01-09', 1, opts(['2026-01-12'])))
+    expect(skip.date).toBe('2026-01-13')
+    // 周六设为补班日后，周五 +1 个工作日即落到周六
+    const makeUp = value(calcWorkdayOffset('2026-01-09', 1, opts([], ['2026-01-10'])))
+    expect(makeUp.date).toBe('2026-01-10')
+    expect(makeUp.weekday).toBe('星期六')
+  })
+
+  it('offset 限制 |days| ≤ 5000 且必须为整数', () => {
+    expect(calcWorkdayOffset('2026-01-05', 5001, opts()).ok).toBe(false)
+    expect(calcWorkdayOffset('2026-01-05', -5001, opts()).ok).toBe(false)
+    const tooBig = calcWorkdayOffset('2026-01-05', 5001, opts())
+    if (!tooBig.ok) expect(tooBig.message).toContain('5000')
+    expect(calcWorkdayOffset('2026-01-05', 1.5, opts()).ok).toBe(false)
+    expect(calcWorkdayOffset('2026-01-05', NaN, opts()).ok).toBe(false)
+  })
+
+  it('buildWorkdaySummary 生成可复制的中文统计文本', () => {
+    const stat: WorkdayStat = { workdays: 5, totalDays: 7, weekendDays: 2, daysOffCount: 0, makeUpCount: 0 }
+    const summary = buildWorkdaySummary('2026-01-05', '2026-01-11', stat)
+    expect(summary).toContain('2026-01-05 到 2026-01-11 共 7 个自然日')
+    expect(summary).toContain('工作日 5 天')
+    expect(summary).toContain('补班日 0 天')
+  })
+
+  it('parseWorkdayDateList 按换行 / 逗号 / 空格切分、去空与去重', () => {
+    expect(parseWorkdayDateList('2026-01-01,2026-01-02\n2026-01-01 2026-01-03')).toEqual([
+      '2026-01-01',
+      '2026-01-02',
+      '2026-01-03'
+    ])
+    expect(parseWorkdayDateList('2026-01-01，2026-01-02')).toEqual(['2026-01-01', '2026-01-02'])
+    expect(parseWorkdayDateList('  ')).toEqual([])
+    expect(parseWorkdayDateList('')).toEqual([])
   })
 })

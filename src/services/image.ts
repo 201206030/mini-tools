@@ -5,6 +5,8 @@ import { askConfirm, showError, showInfo, showSuccess } from './feedback'
 export const MAX_IMAGE_BYTES = 20 * 1024 * 1024
 /** 画布单边上限，控制解码与导出时的内存占用 */
 export const MAX_CANVAS_SIDE = 4096
+/** 图片转 Base64 的输入上限：1MB，避免生成过长的文本 */
+export const MAX_BASE64_BYTES = 1024 * 1024
 
 export interface PickedImage {
   path: string
@@ -306,4 +308,62 @@ export function clampCanvasSize(width: number, height: number): { width: number;
     width: Math.max(1, Math.round(w * ratio)),
     height: Math.max(1, Math.round(h * ratio))
   }
+}
+
+/**
+ * 以 base64 读取本地图片文件，返回不带 data: 前缀的纯 base64 字符串。
+ * 先用 getFileInfo 判定大小，超过 maxBytes 直接拒绝；任何失败路径都给出中文 Error。
+ */
+export function readImageAsBase64(filePath: string, maxBytes = MAX_BASE64_BYTES): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const fail = (message: string) => reject(new Error(message))
+    if (!filePath) {
+      fail('图片路径为空，请重新选择图片')
+      return
+    }
+    const readContent = () => {
+      try {
+        if (typeof (uni as any).getFileSystemManager !== 'function') {
+          fail('当前环境不支持读取本地文件，请升级微信后重试')
+          return
+        }
+        const manager = (uni as any).getFileSystemManager()
+        if (!manager || typeof manager.readFile !== 'function') {
+          fail('当前环境不支持读取本地文件，请升级微信后重试')
+          return
+        }
+        manager.readFile({
+          filePath,
+          encoding: 'base64',
+          success: (res: any) => {
+            const data = String((res && res.data) || '')
+            if (!data) {
+              fail('图片内容为空，请重新选择图片')
+              return
+            }
+            resolve(data)
+          },
+          fail: () => fail('读取图片内容失败，请重试')
+        })
+      } catch {
+        fail('读取图片内容失败，请重试')
+      }
+    }
+    try {
+      uni.getFileInfo({
+        filePath,
+        success: (file: any) => {
+          const size = Number(file && file.size) || 0
+          if (size > maxBytes) {
+            fail('图片超过 1MB，Base64 文本会很长，请选择小一些的图片')
+            return
+          }
+          readContent()
+        },
+        fail: () => fail('读取图片大小失败，请重试')
+      })
+    } catch {
+      fail('读取图片大小失败，请重试')
+    }
+  })
 }

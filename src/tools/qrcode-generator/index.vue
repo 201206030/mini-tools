@@ -3,17 +3,21 @@ import { computed, nextTick, ref, watch } from 'vue'
 import type { SelectOption } from '@/types/common'
 import Segmented from '@/components/Segmented.vue'
 import FormField from '@/components/FormField.vue'
+import SwitchRow from '@/components/SwitchRow.vue'
 import { saveImageToAlbum, useCanvas2d } from '@/services/image'
 import { showError } from '@/services/feedback'
 import {
   buildContactCard,
+  buildWifiContent,
   createQrMatrix,
   validateContactCard,
   validateQrContent,
-  type EccLevel
+  validateWifiConfig,
+  type EccLevel,
+  type WifiAuth
 } from './logic'
 
-type ContentType = 'text' | 'url' | 'card'
+type ContentType = 'text' | 'url' | 'card' | 'wifi'
 interface ColorOption {
   label: string
   value: string
@@ -22,7 +26,13 @@ interface ColorOption {
 const contentTypeOptions: Array<SelectOption<string>> = [
   { label: '普通文字', value: 'text' },
   { label: '网址', value: 'url' },
-  { label: '名片', value: 'card' }
+  { label: '名片', value: 'card' },
+  { label: 'Wi-Fi', value: 'wifi' }
+]
+const wifiAuthOptions: Array<SelectOption<string>> = [
+  { label: 'WPA', value: 'WPA' },
+  { label: 'WEP', value: 'WEP' },
+  { label: '无密码', value: 'nopass' }
 ]
 const sizeOptions: Array<SelectOption<number>> = [
   { label: '小 200px', value: 200 },
@@ -47,6 +57,10 @@ const text = ref('')
 const cardName = ref('')
 const cardPhone = ref('')
 const cardEmail = ref('')
+const wifiSsid = ref('')
+const wifiPassword = ref('')
+const wifiAuth = ref<WifiAuth>('WPA')
+const wifiHidden = ref(false)
 const sizePx = ref(280)
 const fgColor = ref(foregrounds[0].value)
 const bgColor = ref(backgrounds[0].value)
@@ -64,12 +78,28 @@ const content = computed(() => {
   if (contentType.value === 'card') {
     return buildContactCard({ name: cardName.value, phone: cardPhone.value, email: cardEmail.value })
   }
+  if (contentType.value === 'wifi') {
+    return buildWifiContent({
+      ssid: wifiSsid.value,
+      password: wifiPassword.value,
+      auth: wifiAuth.value,
+      hidden: wifiHidden.value
+    })
+  }
   return text.value
 })
 
 const contentError = computed(() => {
   if (contentType.value === 'card') {
     return validateContactCard({ name: cardName.value, phone: cardPhone.value, email: cardEmail.value })
+  }
+  if (contentType.value === 'wifi') {
+    return validateWifiConfig({
+      ssid: wifiSsid.value,
+      password: wifiPassword.value,
+      auth: wifiAuth.value,
+      hidden: wifiHidden.value
+    })
   }
   return validateQrContent(text.value)
 })
@@ -178,11 +208,14 @@ watch([sizePx, fgColor, bgColor], () => {
   if (generated.value) void renderMatrix()
 })
 
-watch([contentType, text, cardName, cardPhone, cardEmail], () => {
-  generated.value = false
-  qrCanvasNode = null
-  canvasError.value = ''
-})
+watch(
+  [contentType, text, cardName, cardPhone, cardEmail, wifiSsid, wifiPassword, wifiAuth, wifiHidden],
+  () => {
+    generated.value = false
+    qrCanvasNode = null
+    canvasError.value = ''
+  }
+)
 </script>
 
 <template>
@@ -201,6 +234,18 @@ watch([contentType, text, cardName, cardPhone, cardEmail], () => {
         <FormField label="邮箱" hint="姓名或电话至少填写一项">
           <input class="field-input" :value="cardEmail" placeholder="请输入邮箱（选填）" @input="cardEmail = $event.detail.value" />
         </FormField>
+      </template>
+      <template v-else-if="contentType === 'wifi'">
+        <FormField label="网络名称 SSID" hint="Wi-Fi 的网络名称，区分大小写，不超过 32 个字符">
+          <input class="field-input" :value="wifiSsid" placeholder="请输入网络名称" @input="wifiSsid = $event.detail.value" />
+        </FormField>
+        <FormField label="密码" hint="选择「无密码」时无需填写，不超过 64 个字符">
+          <input class="field-input" :value="wifiPassword" placeholder="请输入 Wi-Fi 密码" @input="wifiPassword = $event.detail.value" />
+        </FormField>
+        <FormField label="加密方式">
+          <Segmented v-model="wifiAuth" :options="wifiAuthOptions" />
+        </FormField>
+        <SwitchRow v-model="wifiHidden" label="隐藏网络" hint="网络不广播名称时开启，扫码后需手动匹配" />
       </template>
       <template v-else>
         <FormField :label="fieldLabel" :hint="fieldHint">
@@ -263,7 +308,9 @@ watch([contentType, text, cardName, cardPhone, cardEmail], () => {
       </view>
     </view>
 
-    <view class="note note--info qr-tip">内容只在本机生成二维码，不会上传。</view>
+    <view class="note note--info qr-tip">
+      内容只在本机生成二维码，不会上传。<text v-if="contentType === 'wifi'">Wi-Fi 二维码可让微信扫码直接连接网络；网络名称与密码只写入二维码，在本机生成，不会上传。</text>
+    </view>
   </view>
 </template>
 
